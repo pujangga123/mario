@@ -1,16 +1,20 @@
 # inisialisasi
+import sys
 import pygame
 from mario import Mario
 from world import World
 
+GAME_SPEED = 20
 
 def run_game():
+    n = 0
     pygame.init()
     screen = pygame.display.set_mode([700,500])
     clock = pygame.time.Clock()
 
-    mario = Mario(screen)
+    mario = Mario()
     world = World(screen)
+    screen.blit(mario.ani_walk.imgs[0], (10,  10))
 
     running = True
     while running:
@@ -20,28 +24,26 @@ def run_game():
                     running = False            
                 if event.key == pygame.K_SPACE:
                     mario.jump(11)
-                if event.key == pygame.K_x:
-                    fire = Fire(screen,mario)
 
             if event.type == pygame.QUIT:
                 running = False
 
         keys = pygame.key.get_pressed()
-        if mario.condition!='die':
-            if keys[pygame.K_LEFT]:
-                mario.move_left()
-            elif keys[pygame.K_RIGHT]:
-                mario.move_right(True)
-            else:
-                if mario.condition != 'jump':
-                    mario.stand()
+        if keys[pygame.K_LEFT]:
+            mario.move_left()
+        elif keys[pygame.K_RIGHT]:
+            mario.move_right(True)
+        else: # STAND
+            mario.stand()
 
         mario.gravity()
         world.draw()
-        mario.draw()
         
+        img = mario.load_img()
+        screen.blit(img, (mario.x, mario.y - img.get_height()))
+
         pygame.display.flip()
-        clock.tick(18)
+        clock.tick(GAME_SPEED)
     exit_game()
 
 def exit_game():
