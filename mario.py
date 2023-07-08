@@ -3,11 +3,16 @@ from animate import Animation
 
 DIRECT_LEFT = 0
 DIRECT_RIGHT = 1
+
+STATE_STAND = 0
+STATE_JUMP = 1
+STATE_WALK = 2
+
 SPEED = 10
 
 class Mario:
     x = 10
-    y = 550 # posisi terhitung dari dasar objek    
+    y = 550 # use bottom of object as reference
 
     height = 0
     width = 0
@@ -26,7 +31,7 @@ class Mario:
     sound_die = None
     screen = None   
     direct = DIRECT_RIGHT  # left / right
-    condition = 'stand' # stand/walk/jump
+    state = STATE_STAND # stand/walk/jump
 
     def __init__(self):
         self.ani_stand = Animation(['images/mario-stand.png'])
@@ -36,51 +41,50 @@ class Mario:
             'images/mario-walk-3.png', 
             'images/mario-walk-2.png',
         ])
+        self.ani_jump = Animation(['images/mario-jump.png'])
 
-        self.img_jump = pygame.image.load('images/mario4.png')
         self.img_die = pygame.image.load('images/mario6.png')
         self.sound_jump = pygame.mixer.Sound('sound/mario-jump1.wav')
         self.sound_die = pygame.mixer.Sound('sound/mario-die.wav')
 
     def load_img(self): # gambar mario
         img = None
-        if self.condition == 'stand':
+        if self.state == STATE_STAND:
             #img = self.img_stand
             img = self.ani_stand.img
-        if self.condition == "walk":            
+        if self.state == STATE_WALK:
+            print('walk')            
             img = self.ani_walk.img
-        if self.condition == 'jump':
-            img = self.img_jump
-        if self.condition == 'die':
-            img = self.img_die
+        if self.state == STATE_JUMP:
+            img = self.ani_jump.img
         if self.direct == DIRECT_LEFT: #kalau mario sedang menghadap ke kiri, FLIP gambar
             img = pygame.transform.flip(img,True,False)
 
         return img
 
-    def move_left(self):  # gerakan ke kiri
+    def move_left(self):  # move to the left
         self.x -= SPEED
         self.direct = DIRECT_LEFT
-        self.ani_walk.animate()
-        if self.condition != 'jump':
-            self.condition = 'walk'
+        if self.state != STATE_JUMP:
+            self.ani_walk.animate()
+            self.state = STATE_WALK
     
-    def move_right(self, move_char = True):  # bergerak ke kanan 
+    # move_char used when world side scrolling is implemented
+    def move_right(self, move_char = True):  # move to the right 
         if move_char: # bergerak ke kanan tapi hanya jika move_char False
             self.x += SPEED
+
         self.direct = DIRECT_RIGHT
-        self.ani_walk.animate()
-        if self.condition != 'jump':
-            self.condition = 'walk'
+        if self.state != STATE_JUMP:
+            self.ani_walk.animate()
+            self.state = STATE_WALK
 
     def stand(self):
-        self.condition = 'stand'
+        self.state = STATE_STAND
         self.ani_walk.reset()
     
     def die(self):
-        if self.condition!= 'die':
-            self.condition = 'die'
-            self.sound_die.play()
+        pass
 
     def gravity(self):  # gerakan jatuh
         if self.jump_height>0:
@@ -90,12 +94,12 @@ class Mario:
             self.y += 15
         else:
             self.y=self.ground
-            if self.condition ==  "jump":
-                self.condition = 'stand'        
+            if self.state ==  STATE_JUMP:
+                self.state = STATE_STAND     
 
-    def jump(self,height): # lompat
-        if self.condition!='jump':
-            self.condition = 'jump'
+    def jump(self,height=11): # lompat
+        if self.state!=STATE_JUMP:
+            self.state = STATE_JUMP
             self.jump_height = height
             self.sound_jump.play()
 

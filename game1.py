@@ -1,10 +1,15 @@
+# Mario Game 1
+# The program is focus on making a "confortable" character movement
+# includes: Mario walk and jump
+
 # inisialisasi
 import sys
 import pygame
-from mario import Mario
+from mario import *
 from world import World
 
-GAME_SPEED = 20
+# clock tick
+GAME_SPEED = 15
 
 def run_game():
     n = 0
@@ -22,19 +27,21 @@ def run_game():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False            
-                if event.key == pygame.K_SPACE:
-                    mario.jump(11)
+                if event.key == pygame.K_SPACE and mario.state!=STATE_JUMP :
+                    mario.jump()
 
             if event.type == pygame.QUIT:
                 running = False
 
+        # key pressed event
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             mario.move_left()
         elif keys[pygame.K_RIGHT]:
             mario.move_right(True)
         else: # STAND
-            mario.stand()
+            if mario.state != STATE_JUMP:
+                mario.stand()
 
         mario.gravity()
         world.draw()
