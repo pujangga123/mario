@@ -160,4 +160,4 @@ cython_debug/
 #.idea/
 mario.code-workspace
 
-Sprite-Extractor-On-The-Go/
+.vscode/
