@@ -160,4 +160,4 @@ cython_debug/
 #.idea/
 mario.code-workspace
 
-.vscode/
+.vscode
